@@ -13,7 +13,7 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 	response := map[string]string{
 		"message": "Check Health",
 		"author":  "Thuat Nguyen",
-		"tech":    "Golang",
+		"health":  "APIs is running.",
 	}
 
 	json.NewEncoder(w).Encode(response)
