@@ -1,33 +1,49 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"net/http" // Thư viện chuẩn để làm web server (giống Servlet/Tomcat)
+	"log"
+	"os"
+
+	"go-api/internal/user"
+	"go-api/internal/utils"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	// Thiết lập Header giống như trong Spring
-	w.Header().Set("Content-Type", "application/json")
+type HealthResponse struct {
+	Message string `json:"message"`
+	Author  string `json:"author"`
+	Health  string `json:"health"`
+}
 
-	response := map[string]string{
-		"message": "Check Health",
-		"author":  "Thuat Nguyen",
-		"health":  "APIs is running.",
+func checkHealth(c *gin.Context) {
+	data := HealthResponse{
+		Message: "Check health",
+		Author:  "Thuat Nguyen",
+		Health:  "APIs is running.",
 	}
-
-	json.NewEncoder(w).Encode(response)
+	utils.OKResponse(c, data)
 }
 
 func main() {
-	// Định nghĩa route: Khi vào đường dẫn "/" thì gọi hàm helloHandler
-	http.HandleFunc("/", helloHandler)
-
-	fmt.Println("Server đang chạy tại http://localhost:8080...")
-
-	// Bắt đầu lắng nghe tại cổng 8080
-	err := http.ListenAndServe(":8080", nil)
+	err := godotenv.Load()
 	if err != nil {
-		fmt.Printf("Lỗi server: %v\n", err)
+		log.Println("⚠️ Can not find .env, system will use environment variables from OS")
+	}
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	addr := ":" + port
+	r := gin.Default()
+	r.GET("/health", checkHealth)
+	v1 := r.Group("/api/v1")
+	user.RegisterRoutes(v1)
+
+	utils.PrintSuccessBanner(port)
+	err = r.Run(addr)
+	if err != nil {
+		log.Fatalf("❌ Không thể khởi động Server: %v", err)
 	}
 }

@@ -1,5 +1,10 @@
+MAIN_PATH=./cmd/server
+APP_NAME=go-api
 run:
-	go run cmd/server/main.go
+	go run $(MAIN_PATH)/main.go
 
 build:
-	go build -o bin/server cmd/server/main.go
+	go build -o $(APP_NAME) $(MAIN_PATH)/main.go
+
+install:
+	go install $(MAIN_PATH)
