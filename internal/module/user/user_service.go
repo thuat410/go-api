@@ -3,8 +3,6 @@ package user
 import (
 	"context"
 	"errors"
-	"go-api/internal/pkg/utils"
-	"net/http"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -35,9 +33,9 @@ func (s *UserService) GetUserByID(ctx context.Context, id string) (*UserDTO, err
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, err.New(http.StatusNotFound, 40401, "Profile người dùng không tồn tại")
+			return nil, errors.New("Can not find user profile")
 		}
-		return nil, utils.NewAppError(http.StatusInternalServerError, 50000, "Lỗi truy xuất hệ thống")
+		return nil, errors.New("Internal server error")
 	}
 
 	// Xử lý an toàn cho các trường NULL từ Database

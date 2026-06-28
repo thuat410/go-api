@@ -1,7 +1,7 @@
 package user
 
 import (
-	"go-api/internal/utils"
+	"go-api/internal/pkg/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
