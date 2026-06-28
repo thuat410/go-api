@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"go-api/internal/product"
 	"go-api/internal/user"
 	"go-api/internal/utils"
 
@@ -40,6 +41,7 @@ func main() {
 	r.GET("/health", checkHealth)
 	v1 := r.Group("/api/v1")
 	user.RegisterRoutes(v1)
+	product.RegisterRoutes(v1)
 
 	utils.PrintSuccessBanner(port)
 	err = r.Run(addr)
