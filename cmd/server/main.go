@@ -4,8 +4,9 @@ import (
 	"log"
 	"os"
 
-	"go-api/internal/product"
-	"go-api/internal/user"
+	"go-api/internal/module/product"
+	"go-api/internal/module/user"
+	"go-api/internal/pkg/db"
 	"go-api/internal/utils"
 
 	"github.com/gin-gonic/gin"
@@ -32,6 +33,9 @@ func main() {
 	if err != nil {
 		log.Println("⚠️ Can not find .env, system will use environment variables from OS")
 	}
+	dbPool := db.InitDB()
+	defer dbPool.Close()
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -40,8 +44,8 @@ func main() {
 	r := gin.Default()
 	r.GET("/health", checkHealth)
 	v1 := r.Group("/api/v1")
-	user.RegisterRoutes(v1)
-	product.RegisterRoutes(v1)
+	user.RegisterRoutes(v1, dbPool)
+	product.RegisterRoutes(v1, dbPool)
 
 	utils.PrintSuccessBanner(port)
 	err = r.Run(addr)
